@@ -1,23 +1,28 @@
-FROM ubuntu:24.04
+FROM php:8.4-cli-alpine
 
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y curl npm unzip p7zip-full p7zip-rar && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# Install Alpine dependencies
+RUN apk add --no-cache \
+    curl \
+    npm \
+    unzip \
+    bash \
+    git
 
-RUN mkdir -p /files && \
-    mkdir -p /app
+# Set up folders
+RUN mkdir -p /files /app
 COPY DevOps /files/DevOps
 
-RUN TERM=xterm bash -c "$(curl -fsSL https://php.new/install/linux/8.4)" -- --yes
+# Install Laravel globally
+RUN curl -s https://getcomposer.org/installer | php && \
+    mv composer.phar /usr/local/bin/composer && \
+    composer global require laravel/installer && \
+    ln -s /root/.composer/vendor/bin/laravel /usr/local/bin/laravel
 
-RUN echo '#!/bin/bash' > /entrypoint.sh && \
-    echo "export PATH='/root/.config/herd-lite/bin:$PATH'" >> /entrypoint.sh && \
-    echo "export PHP_INI_SCAN_DIR='/root/.config/herd-lite/bin:$PHP_INI_SCAN_DIR'" >> /entrypoint.sh && \
-    echo "/root/.config/herd-lite/bin/laravel new laravel-project" >> /entrypoint.sh && \
+# Entry script
+RUN echo '#!/bin/sh' > /entrypoint.sh && \
+    echo "laravel new laravel-project" >> /entrypoint.sh && \
     echo "cp -r /files/DevOps /app/" >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
 WORKDIR /app
-CMD ["/bin/bash", "/entrypoint.sh"]
+CMD ["/entrypoint.sh"]

@@ -10,7 +10,7 @@ The following command will run a one off Docker container, you should run this f
 
 ```plaintext
 docker run --rm -it \
-  -v ./:/app \
+  -v ${PWD}:/app \
   samsmithcodes/laravel-project-starter:latest
 ```
 
