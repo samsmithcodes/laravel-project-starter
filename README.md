@@ -69,7 +69,7 @@ bash DevOps/Scripts/RunNpm.sh <command>
 
 ## Building
 
-**This section is more for the maintainer, if oyu have forked the repository, you should update this to match your needs.**
+**This section is more for the maintainer, if you have forked the repository, you should update this to match your needs.**
 
 These are the steps to build the image for this Laravel Project Starter tool and push to Docker Hub.
 
